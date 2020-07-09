@@ -1141,6 +1141,21 @@ static int fts_ts_probe_entry(struct fts_ts_data *ts_data)
         FTS_ERROR("init glove/cover/charger fail");
     }
 
+    fts_data->double_tap_enable = 0;
+    fts_data->swipe_right_enable = 0;
+    fts_data->swipe_left_enable = 0;
+    fts_data->swipe_up_enable = 0;
+    fts_data->swipe_down_enable = 0;
+    fts_data->letter_o_enable = 0;
+    fts_data->letter_e_enable = 0;
+    fts_data->letter_m_enable = 0;
+    fts_data->letter_w_enable = 0;
+    fts_data->letter_l_enable = 0;
+    fts_data->letter_s_enable = 0;
+    fts_data->letter_v_enable = 0;
+    fts_data->letter_c_enable = 0;
+    fts_data->letter_z_enable = 0;
+
 #if FTS_GESTURE_EN
     ret = fts_gesture_init(ts_data);
     if (ret) {
