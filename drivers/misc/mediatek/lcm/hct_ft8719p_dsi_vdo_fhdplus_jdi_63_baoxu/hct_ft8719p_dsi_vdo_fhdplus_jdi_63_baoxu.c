@@ -108,11 +108,7 @@ static LCM_UTIL_FUNCS lcm_util = {0};
 #if defined(BUILD_LK)
 #else
 extern int fts_write_reg(u8 addr, u8 value);
-#if __HCT_TP_GESTURE_SUPPORT__
-extern char tpgesture_status;
-#else
-static char tpgesture_status = 0;
-#endif
+static char tpgesture_status = 1;
 #endif
 extern int RT5081_db_pos_neg_setting(void);
 extern int RT5081_db_pos_neg_disable(void);
