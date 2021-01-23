@@ -193,7 +193,7 @@ int hct_customkey_f1_init(struct platform_device *pdev)
 	/*get the node*/
 	node = of_find_compatible_node(NULL, NULL, "mediatek,hct_customkey");
 	if (node) {
-        printk("%s: node = (%d) not null.\n", __func__,(int)node);
+        // printk("%s: node = (%d) not null.\n", __func__,(int)node);
 
 		hct_customkey_f1_irqnum = irq_of_parse_and_map(node, 0);
 		printk("%s: f1  hct_customkey_f1_irqnum = %d\n", __func__, hct_customkey_f1_irqnum);
