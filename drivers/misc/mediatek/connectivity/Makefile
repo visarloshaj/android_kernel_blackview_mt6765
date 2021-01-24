@@ -41,6 +41,7 @@ ifneq ($(KERNELRELEASE),)
     subdir-ccflags-y += -D MTK_WCN_BUILT_IN_DRIVER
     obj-y += bt/mt66xx/
     obj-y += common/
+    obj-y += fmradio/
     obj-y += wlan/adaptor/
     obj-y += wlan/core/gen4m/
     obj-y += gps/
