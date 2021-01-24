@@ -3,7 +3,7 @@
 
 ###############################################################################
 MODULE_NAME := btmtksdio
-obj-m += $(MODULE_NAME).o
+obj-y += $(MODULE_NAME).o
 
 #ccflags-y += -D CREATE_NODE_DYNAMIC=1
 
