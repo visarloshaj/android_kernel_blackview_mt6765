@@ -42,6 +42,8 @@ ifneq ($(KERNELRELEASE),)
     obj-y += common/
     obj-y += wlan/adaptor/
     obj-y += wlan/core/gen4m/
+    obj-y += gps/
+
 
 # Otherwise we were called directly from the command line;
 # invoke the kernel build system.
