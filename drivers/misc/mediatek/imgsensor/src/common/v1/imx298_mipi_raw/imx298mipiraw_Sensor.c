@@ -2786,7 +2786,7 @@ static kal_uint32 preview(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 //    {
 		preview_setting(); /*PDAF only*/
 //    }
-    set_mirror_flip(sensor_config_data->SensorImageMirror);
+    set_mirror_flip(IMAGE_HV_MIRROR);
     return ERROR_NONE;
 }    /*    preview   */
 
@@ -2833,6 +2833,8 @@ static kal_uint32 capture(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
     else
 		capture_setting(imgsensor.current_fps);/*Full mode*/
 
+    set_mirror_flip(IMAGE_HV_MIRROR);
+
     return ERROR_NONE;
 }    /* capture() */
 static kal_uint32 normal_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
@@ -2850,7 +2852,7 @@ static kal_uint32 normal_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
     imgsensor.autoflicker_en = KAL_FALSE;
     spin_unlock(&imgsensor_drv_lock);
     normal_video_setting(imgsensor.current_fps);	
-    set_mirror_flip(sensor_config_data->SensorImageMirror);
+    set_mirror_flip(IMAGE_HV_MIRROR);
     return ERROR_NONE;
 }    /*    normal_video   */
 
@@ -2871,7 +2873,7 @@ static kal_uint32 hs_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
     imgsensor.autoflicker_en = KAL_FALSE;
     spin_unlock(&imgsensor_drv_lock);
     hs_video_setting();	
-    set_mirror_flip(sensor_config_data->SensorImageMirror);
+    set_mirror_flip(IMAGE_HV_MIRROR);
     return ERROR_NONE;
 }    /*    hs_video   */
 
@@ -2891,7 +2893,7 @@ static kal_uint32 slim_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
     imgsensor.autoflicker_en = KAL_FALSE;
     spin_unlock(&imgsensor_drv_lock);
     slim_video_setting();
-    set_mirror_flip(sensor_config_data->SensorImageMirror);
+    set_mirror_flip(IMAGE_HV_MIRROR);
 
     return ERROR_NONE;
 }    /*    slim_video     */
