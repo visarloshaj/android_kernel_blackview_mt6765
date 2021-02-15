@@ -31,6 +31,8 @@
 #define IMX298_OTP
 #define S5K3P9_OTP
 
+#define __HCT_LENS_NOISE_CLEAN__ HCT_YES
+
 ////////////////GT9XX _TP CONFIG ///////////////////////////////////
 
 #define __HCT_CONFIG_HCT_GTP_HALL_CFG__   HCT_NO
