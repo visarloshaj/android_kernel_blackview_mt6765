@@ -125,10 +125,6 @@
 #define __HCT_BACK_CLAMP_SUPPORT__		HCT_NO
 #endif
 
-#ifndef __HCT_CUSTOMKEY_F1_SUPPORT__
-#define __HCT_CUSTOMKEY_F1_SUPPORT__		HCT_YES
-#endif
-
 ///////////////////
 /////  next pls do not modify
 ////////////////////
