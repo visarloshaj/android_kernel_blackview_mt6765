@@ -42,6 +42,8 @@ else
 
 endif
 
+CFLAGS_KASAN_NOSANITIZE := -fno-builtin
+
 ifdef CONFIG_KASAN_ENHANCEMENT
 	CFLAGS_KASAN += $(call cc-param,asan-mapping-scale=4)
 endif
