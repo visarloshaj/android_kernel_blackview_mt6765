@@ -108,6 +108,7 @@ static LCM_UTIL_FUNCS lcm_util = {0};
 #if defined(BUILD_LK)
 #else
 extern int fts_write_reg(u8 addr, u8 value);
+static char tpgesture_status = 1;
 #endif
 extern int RT5081_db_pos_neg_setting(void);
 extern int RT5081_db_pos_neg_disable(void);
@@ -340,7 +341,11 @@ static struct LCM_setting_table lcm_sleep_in_setting[] = {
 	// Sleep Mode On
 	{0x10, 1, {0x00}},
 	{REGFLAG_DELAY, 60, {}},
-	
+
+	{REGFLAG_END_OF_TABLE, 0x00, {}}
+};
+
+static struct LCM_setting_table lcm_deep_sleep_in_setting[] = {
 	//deepsleep
  	{0x00,1,{0x00}},
 	{0xFF,3,{0x87,0x19,0x01}},
@@ -351,7 +356,6 @@ static struct LCM_setting_table lcm_sleep_in_setting[] = {
 
 	{REGFLAG_END_OF_TABLE, 0x00, {}}
 };
-
 
 
 // ---------------------------------------------------------------------------
@@ -397,7 +401,7 @@ static void lcm_get_params(LCM_PARAMS * params)
 	params->dsi.PS=LCM_PACKED_PS_24BIT_RGB888;
 	
 #if (LCM_DSI_CMD_MODE)
-	params->dsi.intermediat_buffer_num = 0;//because DSI/DPI HW design change, this parameters should be 0 when video mode in MT658X; or memory leakage
+	params->dsi.intermediat_buffer_num = 0; //because DSI/DPI HW design change, this parameters should be 0 when video mode in MT658X; or memory leakage
 	params->dsi.word_count=FRAME_WIDTH*3;	//DSI CMD mode need set these two bellow params, different to 6577
 #else
 	params->dsi.intermediat_buffer_num = 0;	//because DSI/DPI HW design change, this parameters should be 0 when video mode in MT658X; or memory leakage
@@ -410,32 +414,32 @@ static void lcm_get_params(LCM_PARAMS * params)
     params->physical_width = 67;
     params->physical_height = 145;
  
-    params->dsi.vertical_sync_active                =  9;//2
+    params->dsi.vertical_sync_active                = 9; //2
 
-    params->dsi.vertical_backporch                    =54 ;//16 25 30 35 12 8 8
+    params->dsi.vertical_backporch                  = 54; //16 25 30 35 12 8 8
 
-    params->dsi.vertical_frontporch                    = 114;
+    params->dsi.vertical_frontporch                 = 114;
 
     params->dsi.vertical_active_line                = FRAME_HEIGHT; 
 
  
 
-    params->dsi.horizontal_sync_active                =6 ;//56 30
+    params->dsi.horizontal_sync_active              = 6;    // 56 30
 
-    params->dsi.horizontal_backporch                =16; //104 85
+    params->dsi.horizontal_backporch                = 16;   // 104 85
 
-    params->dsi.horizontal_frontporch                =104 ;//20 20
+    params->dsi.horizontal_frontporch               = 104;  // 20 20
 
-    params->dsi.horizontal_active_pixel                = FRAME_WIDTH;
-
- 
+    params->dsi.horizontal_active_pixel             = FRAME_WIDTH;
 
  
 
-    params->dsi.PLL_CLOCK=599;//230 450  550 //587
+ 
+
+    params->dsi.PLL_CLOCK=599; // 230 450 550 587
 
 	params->dsi.cont_clock = 1;
-	params->dsi.clk_lp_per_line_enable = 0;//1
+	params->dsi.clk_lp_per_line_enable = 0; //1
 	params->dsi.ssc_disable = 1;	
 	
 	params->dsi.esd_check_enable = 1;
@@ -452,7 +456,7 @@ static void lcm_init(void)
 	 
 	SET_RESET_PIN(0);
     MDELAY(10);
-	//set_gpio_lcd_enp(1);//3.3V
+	//set_gpio_lcd_enp(1); //3.3V
 
 	set_gpio_lcd_enn(1);  //1.8
     MDELAY(10);
@@ -483,44 +487,60 @@ static void lcm_suspend(void)
 	dsi_set_cmdq(array, 1, 1);
 	MDELAY(5);*/
 
-#if defined(BUILD_LK)
-#else
+#ifndef BUILD_LK
 	int ret;
-    /* TP enter sleep mode */
-    ret = fts_write_reg(0xA5, 0x03);
-    if (ret < 0)
-        printk("set TP to sleep mode fail, ret=%d", ret);
+	if (tpgesture_status) {
+		printk("tpgesture_status is 1, not entering TP sleep mode!\n")
+	} else {
+    	/* TP enter sleep mode */
+    	ret = fts_write_reg(0xA5, 0x03);
+    	if (ret < 0)
+        	printk("set TP to sleep mode fail, ret=%d", ret);
+	}
 #endif
-        
-	push_table(lcm_sleep_in_setting,sizeof(lcm_sleep_in_setting) /sizeof(struct LCM_setting_table), 1);
-	
 
-	SET_RESET_PIN(0);
-	MDELAY(5);
-	//set_gpio_lcd_enp(0);//3.3V
-	//MDELAY(10);
-	PMU_db_pos_neg_disable_delay(10);
-	MDELAY(5);
-	//set_gpio_lcd_enn(0);
-    MDELAY(10);
-	//RT5081_db_pos_neg_disable();
+	push_table(lcm_sleep_in_setting,sizeof(lcm_sleep_in_setting) /sizeof(struct LCM_setting_table), 1);
+
+	if (!tpgesture_status) {
+		push_table(lcm_deep_sleep_in_setting,sizeof(lcm_deep_sleep_in_setting) /sizeof(struct LCM_setting_table), 1);
+
+		SET_RESET_PIN(0);
+		MDELAY(5);
+		//set_gpio_lcd_enp(0);//3.3V
+		//MDELAY(10);
+		PMU_db_pos_neg_disable_delay(10);
+		MDELAY(5);
+		//set_gpio_lcd_enn(0);
+		MDELAY(10);
+		//RT5081_db_pos_neg_disable();
+	}
 }
 
 static unsigned int lcm_compare_id(void);
 static void lcm_resume(void)
 {
-	lcm_init();
+	if (tpgesture_status) {
+		SET_RESET_PIN(1);
+		MDELAY(10);
+		SET_RESET_PIN(0);
+		MDELAY(10);
+		SET_RESET_PIN(1);
+		MDELAY(100);
+		push_table(lcm_initialization_setting,sizeof(lcm_initialization_setting) /sizeof(struct LCM_setting_table), 1);
+	} else {
+		lcm_init();
+	}
 }
-
 
 static unsigned int lcm_compare_id(void)
 {
 
 	int array[4];
-     char buffer[5];
-     char id_high=0;
-     char id_low=0;
-     int id=0;
+    char buffer[5];
+
+	char id_high = 0;
+    char id_low  = 0;
+    int  id      = 0;
 
 	hct_lcm_power_settings(HCT_LCM_POWER_MODE1_RT5081_BY_I2C, 1, 15, 10);	 
     MDELAY(15);
@@ -533,7 +553,7 @@ static unsigned int lcm_compare_id(void)
 	MDELAY(120);
  
 
-     array[0]=0x00043700;
+     array[0] = 0x00043700;
      dsi_set_cmdq(array, 1, 1);
  
      read_reg_v2(0xA1, buffer,4);
@@ -544,7 +564,7 @@ static unsigned int lcm_compare_id(void)
 	 
      id =(id_high << 8) | id_low;
  
-     #if defined(BUILD_LK)
+     #ifdef BUILD_LK
      printf("FT8719P compare-LK:0x%02x,0x%02x,0x%02x\n", id_high, id_low, id);
      #else
      printk("FT8719P compare:0x%02x,0x%02x,0x%02x,\n", id_high, id_low, id);
@@ -560,10 +580,5 @@ LCM_DRIVER hct_ft8719p_dsi_vdo_fhdplus_jdi_63_hlt =
 	.init           = lcm_init,
 	.suspend        = lcm_suspend,
 	.resume         = lcm_resume,	
-	.compare_id     = lcm_compare_id,	
-
-#if (LCM_DSI_CMD_MODE)
-    //.update         = lcm_update,
-#endif	//wqtao
+	.compare_id     = lcm_compare_id
 };
-
