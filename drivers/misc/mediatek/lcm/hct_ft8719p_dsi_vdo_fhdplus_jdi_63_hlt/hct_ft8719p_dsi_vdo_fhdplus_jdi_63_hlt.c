@@ -353,6 +353,7 @@ static struct LCM_setting_table lcm_deep_sleep_in_setting[] = {
 	{0xFF,2,{0x87,0x19}},
 	{0x00,1,{0x00}},
  	{0xF7,4,{0x5A,0xA5,0x95,0x27}},
+	{REGFLAG_DELAY, 60, {}},
 
 	{REGFLAG_END_OF_TABLE, 0x00, {}}
 };
